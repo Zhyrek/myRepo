@@ -249,8 +249,8 @@ public class FCGold extends JFrame {
 						v = jointLocations.get(i).copy(); 
 						if(editorMode == -2)
 						{
-							Body b = getBodyAtLocation(ex1,ex2);
-							if(getBodyAtLocation(ex1,ex2) != null)
+							Body b = getBodyAtLocation(ex1,ey1);
+							if(b != null)
 							{
 								deleteObject = b;
 							}
@@ -394,8 +394,7 @@ public class FCGold extends JFrame {
 	    	temp = str[i].split(",");
 	    	if(temp[0].equals("SR"))
 	    	{
-	    		go = addSR(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r);
-	    		this.world.addBody(go);
+	    		this.world.addBody(new StaticRect(Double.valueOf(temp[1])/40,Double.valueOf(temp[1])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r));
 	    	}
 	    	else if(temp[0].equals("SC"))
 	    	{
@@ -507,7 +506,6 @@ public class FCGold extends JFrame {
 					try {
 						Thread.sleep(gameLoop());
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					// you could add a Thread.yield(); or
@@ -542,7 +540,6 @@ public class FCGold extends JFrame {
 			}
 			if(deleteObject != null)
 			{
-				if(deleteObject.getUserData()[0] != "J")
 				deleteObject(deleteObject);
 				deleteObject = null;
 			}
@@ -767,6 +764,22 @@ public class FCGold extends JFrame {
 	}
 	public void deleteObject(Body b)
 	{
+		int index = this.world.getBodies().indexOf(b);
+		rodIndices.add(index);
+		String s = ((String[])b.getUserData())[0];
+		if(s.equals("R"))
+		{
+			List<Body> l = b.getJoinedBodies();
+			for(Body j : l)
+			{
+				if(((String[])j.getUserData())[0] == "J" && j.getJoinedBodies().size() == 1)
+				{
+					this.world.removeBody(j);
+				}
+			}
+		}
+		removeObjects(s);
+		rodIndices.clear();
 		
 	}
 	public void addObject()
@@ -861,23 +874,26 @@ public class FCGold extends JFrame {
 				}	
 			}
 			Collections.sort(rodIndices,Collections.reverseOrder());
-			removeObjects();
+			removeObjects("R");
 			checkBodyLocation = false;
 		}
 		moveObject = false;
 	}
-	public Body getBodyAtLocation(double ex12, double ex22)
+	public Body getBodyAtLocation(double x, double y)
 	{
 		for(Body b: this.world.getBodies())
 		{
-			if(b.contains(new Vector2(ex12,ex22)))
+			if(((String[])b.getUserData())[0] != "J")
 			{
-				return b;
+				if(b.contains(new Vector2(x,y)))
+				{
+					return b;
+				}
 			}
 		}
 		return null;
 	}
-	public void removeObjects()
+	public void removeObjects(String s)
 	{
 		for(int i = 0; i < buildAreas.size(); i++)
 		{
@@ -911,6 +927,17 @@ public class FCGold extends JFrame {
 		{
 			goalRects.get(i).adjustIndex(rodIndices);
 		}
+		if(s.equals("GC"))
+		{
+			for(int j = 0; j < goalCircles.size(); j++)
+			{
+				if(goalCircles.get(j).getI() == rodIndices.get(0))
+				{
+					goalCircles.remove(j);
+					break;
+				}
+			}
+		}
 		for(int i = 0; i < goalCircles.size(); i++)
 		{
 			goalCircles.get(i).adjustIndex(rodIndices);
@@ -919,21 +946,24 @@ public class FCGold extends JFrame {
 		{
 			wheels.get(i).adjustIndex(rodIndices);
 		}
-		for(int i:rodIndices)
+		if(s.equals("R"))
 		{
-			for(int j = 0; j < rods.size(); j++)
+			for(int i:rodIndices)
 			{
-				if(rods.get(j).getI() == i)
+				for(int j = 0; j < rods.size(); j++)
 				{
-					rods.remove(j);
-					break;
+					if(rods.get(j).getI() == i)
+					{
+						rods.remove(j);
+						break;
+					}
 				}
-			}
-			for(double[] d : movingRodEnds)
-			{
-				if(i < d[3])
+				for(double[] d : movingRodEnds)
 				{
-					d[3]--;
+					if(i < d[3])
+					{
+						d[3]--;
+					}
 				}
 			}
 		}
@@ -1086,6 +1116,8 @@ public class FCGold extends JFrame {
 		{
 			rods.get(i).render2(g,SCALE);
 		}
+		((GamePiece)this.world.getBody(0)).render(g,SCALE);
+		((GamePiece)this.world.getBody(0)).render2(g,SCALE);
 	}
 	private void renderBacks(Graphics2D g) 
 	{
@@ -1191,24 +1223,6 @@ public class FCGold extends JFrame {
 		
 		// start it
 		window.start();
-	}
-	public Body addSR(double x, double y, double w, double h, double a)
-	{
-		Rectangle floorRect = new Rectangle(w, h);
-		staticRects.add(new StaticRect(new Rectangle(w-0.2, h-0.2),x, y, a));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(floorRect);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(cf1);
-		go.addFixture(b);
-		go.setMass(MassType.INFINITE);
-		// move the floor down a bit
-		go.translate(x, y);
-		go.rotateAboutCenter(a);
-		String[] s = {"SR",""+(x*40),""+(y*40)+","+(w*40),""+(h*40),""+(a*180/Math.PI)};
-		go.setUserData(s);
-		return go;
 	}
 	public Body addSC(double x, double y, double radius)
 	{

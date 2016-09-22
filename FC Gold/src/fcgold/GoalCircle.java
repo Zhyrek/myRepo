@@ -55,10 +55,10 @@ public class GoalCircle extends GamePiece{
 		
 		double radius2 = 2.0 * radius;
 		Ellipse2D.Double c = new Ellipse2D.Double(
-			(center.x - radius) * scale,
-			(center.y - radius) * scale,
-			radius2 * scale,
-			radius2 * scale);
+			(center.x - radius) * 40,
+			(center.y - radius) * 40,
+			radius2 * 40,
+			radius2 * 40);
 		
 		// fill the shape
 		
@@ -66,10 +66,12 @@ public class GoalCircle extends GamePiece{
 		
 		// transform the coordinate system from world coordinates to local coordinates
 		AffineTransform lt = new AffineTransform();
-		lt.translate(x * scale, y * scale);
+		lt.scale(scale/40, scale/40);
+		lt.translate(x * 40, y * 40);
 		lt.rotate(a);
 		// apply the transform
 		g.transform(lt);
+		g.setStroke(new BasicStroke(8));
 		g.setColor(cb);
 		g.draw(c);
 		g.setTransform(ot);

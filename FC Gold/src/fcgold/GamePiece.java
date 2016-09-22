@@ -1,8 +1,11 @@
 package fcgold;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
-public class GamePiece {
+import org.dyn4j.dynamics.Body;
+
+public class GamePiece extends Body{
 	int index;
 	public GamePiece()
 	{
@@ -21,5 +24,11 @@ public class GamePiece {
 				index--;
 			}
 		}
+	}
+	public void render(Graphics2D g, double scale) {
+		
+	}
+	public void render2(Graphics2D g, double scale) {
+		
 	}
 }
