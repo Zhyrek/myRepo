@@ -8,7 +8,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 
 import org.dyn4j.collision.CategoryFilter;
-import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
@@ -46,7 +45,7 @@ public class CloudRect extends GamePiece{
 		b1.setDensity(0.5); //1
 		b1.setFriction(0.7);
 		b1.setRestitution(0.1);
-		b1.setFilter(cf1);
+		b1.setFilter(new CategoryFilter(1,7));
 		this.addFixture(b1);
 		this.setMass(MassType.NORMAL);
 		this.setLinearDamping(1);

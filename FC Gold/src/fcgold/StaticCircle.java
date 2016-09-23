@@ -5,79 +5,69 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
-import org.dyn4j.geometry.Convex;
-import org.dyn4j.geometry.Vector2;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.collision.CategoryFilter;
+import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Circle;
 
 public class StaticCircle extends GamePiece{
-	public double x,y;
-	public Circle r;
+	Ellipse2D.Double drawPath;
+	Ellipse2D.Double fillPath;
 	public Color cf = new Color(43,197,0);
 	public Color cb = new Color(29,133,1);
-	public StaticCircle(Convex convex, double d, double e) {
-		x = d;
-		y = e;
-		r = (Circle)convex;
-	}
-	public double getX()
+	public StaticCircle(double x, double y, double radius)
 	{
-		return x;
-	}
-	public double getY()
-	{
-		return y;
+		Circle cirShape = new Circle(radius);
+		drawPath = new Ellipse2D.Double(
+				(- radius) * 40,
+				(- radius) * 40,
+				radius * 80,
+				radius * 80);
+		fillPath = new Ellipse2D.Double(
+				(- radius) * 40+4,
+				(- radius) * 40+4,
+				radius * 80-8,
+				radius * 80-8);
+		BodyFixture b1 = new BodyFixture(cirShape);
+		b1.setFriction(0.7);
+		b1.setRestitution(0.1);
+		b1.setFilter(new CategoryFilter(2,3));
+		this.addFixture(b1);
+		this.setMass(MassType.NORMAL);
+		this.translate(x, y);
+		String[] s = {"GC",""+(x*40),""+(y*40),""+(radius*80)};
+		this.setUserData(s);
 	}
 	public void render(Graphics2D g, double scale)
 	{
-		double radius = r.getRadius();
-		Vector2 center = r.getCenter();
-		
-		double radius2 = 2.0 * radius;
-		Ellipse2D.Double c = new Ellipse2D.Double(
-			(center.x - radius) * scale,
-			(center.y - radius) * scale,
-			radius2 * scale,
-			radius2 * scale);
-		
-		// fill the shape
-		
+		double x = this.getWorldCenter().x;
+		double y = this.getWorldCenter().y;
+		double a = this.getTransform().getRotation();
 		AffineTransform ot = g.getTransform();
-		
-		// transform the coordinate system from world coordinates to local coordinates
 		AffineTransform lt = new AffineTransform();
-		lt.translate(x * scale, y * scale);
-		
+		lt.scale(scale/40, scale/40);
+		lt.translate(x * 40, y * 40);
+		lt.rotate(a);
 		// apply the transform
 		g.transform(lt);
 		g.setColor(cb);
-		g.draw(c);
+		g.fill(drawPath);
 		g.setTransform(ot);
 	}
 	public void render2(Graphics2D g, double scale)
 	{
-		double radius = r.getRadius();
-		Vector2 center = r.getCenter();
-		
-		double radius2 = 2.0 * radius;
-		Ellipse2D.Double c = new Ellipse2D.Double(
-			(center.x - radius) * scale,
-			(center.y - radius) * scale,
-			radius2 * scale,
-			radius2 * scale);
-		
-		// fill the shape
-		
+		double x = this.getWorldCenter().x;
+		double y = this.getWorldCenter().y;
+		double a = this.getTransform().getRotation();
 		AffineTransform ot = g.getTransform();
-		
-		// transform the coordinate system from world coordinates to local coordinates
 		AffineTransform lt = new AffineTransform();
-		lt.translate(x * scale, y * scale);
-		
+		lt.scale(scale/40, scale/40);
+		lt.translate(x * 40, y * 40);
+		lt.rotate(a);
 		// apply the transform
 		g.transform(lt);
 		g.setColor(cf);
-		g.fill(c);
+		g.fill(fillPath);
 		g.setTransform(ot);
-		
 	}
 }
