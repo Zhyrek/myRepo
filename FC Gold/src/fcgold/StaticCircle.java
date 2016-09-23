@@ -12,8 +12,8 @@ import org.dyn4j.geometry.Circle;
 public class StaticCircle extends GamePiece{
 	public double x,y;
 	public Circle r;
-	public Color cf = new Color(0, 200,0);
-	public Color cb = cf.darker();
+	public Color cf = new Color(43,197,0);
+	public Color cb = new Color(29,133,1);
 	public StaticCircle(Convex convex, double d, double e) {
 		x = d;
 		y = e;

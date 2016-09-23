@@ -12,8 +12,8 @@ import org.dyn4j.geometry.Vector2;
 public class BuildArea extends GamePiece{
 	public double x,y;
 	public Polygon r;
-	public Color cf = new Color(200, 200, 255);
-	public Color cb = cf.darker();
+	public Color cf = new Color(191,216,248);
+	public Color cb = new Color(127,102,237);
 	public BuildArea(Convex convex, double d, double e, int i) {
 		x = d;
 		y = e;

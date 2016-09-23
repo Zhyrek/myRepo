@@ -7,139 +7,122 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 
-import org.dyn4j.geometry.Convex;
-import org.dyn4j.geometry.Polygon;
-import org.dyn4j.geometry.Vector2;
+import org.dyn4j.collision.CategoryFilter;
+import org.dyn4j.dynamics.BodyFixture;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Rectangle;
 
 public class DynRect extends GamePiece{
-	public double x,y,a;
-	public Polygon r;
-	public Color cf = new Color(250, 230, 60);
-	public Color cb = cf.darker();
-	public boolean joints;
-	public DynRect(Convex convex, double d, double e, double f, boolean b, int i) {
-		x = d;
-		y = e;
-		a = f;
-		r = (Polygon)convex;
-		joints = b;
-		index = i;
+	Rectangle renderRect;
+	public double width,height;
+	public Color cf = new Color(242,223,55);
+	public Color cb = new Color(189,84,32);
+	Path2D.Double fillPath = new Path2D.Double();
+	Path2D.Double drawPath = new Path2D.Double();
+	boolean isJointed;
+	public DynRect(double x, double y, double w, double h, double a, boolean j) {
+		width = w;
+		height = h;
+		fillPath.moveTo(w*20-4, h*20-4);
+		fillPath.lineTo(w*20-4, -h*20+4);
+		fillPath.lineTo(-w*20+4, -h*20+4);
+		fillPath.lineTo(-w*20+4, h*20-4);
+		fillPath.lineTo(w*20-4, h*20-4);
+		fillPath.closePath();
+		drawPath.moveTo(w*20-4, h*20);
+		drawPath.lineTo(-w*20+4, h*20);
+		drawPath.quadTo(-w*20, h*20, -w*20, h*20-4);
+		drawPath.lineTo(-w*20, -h*20+4);
+		drawPath.quadTo(-w*20, -h*20, -w*20+4, -h*20);
+		drawPath.lineTo(w*20-4, -h*20);
+		drawPath.quadTo(w*20, -h*20, w*20, -h*20+4);
+		drawPath.lineTo(w*20, h*20-4);
+		drawPath.quadTo(w*20, h*20, w*20-4, h*20);
+		drawPath.closePath();
+		isJointed = j;
+		Rectangle floorRect = new Rectangle(w, h);
+		BodyFixture b1 = new BodyFixture(floorRect);
+		b1.setFriction(0.7);
+		b1.setRestitution(0.1);
+		b1.setFilter(new CategoryFilter(1,7));
+		this.addFixture(b1);
+		this.setMass(MassType.INFINITE);
+		// move the floor down a bit
+		this.translate(x, y);
+		this.rotateAboutCenter(a);
+		String[] s = {"DR",""+(x*40),""+(y*40),""+(w*40),""+(h*40),""+(a*180/Math.PI),""+toInt(isJointed)};
+		this.setUserData(s);
 	}
-	public double getX()
-	{
-		return x;
-	}
-	public double getY()
-	{
-		return y;
-	}
-	public double getA()
-	{
-		return a;
-	}
-	public void setX(double d)
-	{
-		x = d;
-	}
-	public void setY(double d)
-	{
-		y = d;
-	}
-	public void setA(double d)
-	{
-		a = d;
+	private int toInt(boolean joints) {
+		if(joints)
+		{
+			return 1;
+		}
+		return 0;
 	}
 	public void render(Graphics2D g, double scale)
 	{
-		Vector2[] vertices = r.getVertices();
-		int l = vertices.length;
-		
-		// create the awt polygon
-		Path2D.Double p = new Path2D.Double();
-		p.moveTo(vertices[0].x * scale, vertices[0].y * scale);
-		for (int i = 1; i < l; i++) {
-			p.lineTo(vertices[i].x * scale, vertices[i].y * scale);
-		}
-		p.closePath();
-		double width = Math.abs(vertices[3].x-vertices[1].x);
-		double height = Math.abs(vertices[3].y-vertices[1].y);
-		Vector2 center = r.getCenter();
+		double x = this.getWorldCenter().x;
+		double y = this.getWorldCenter().y;
+		double a = this.getTransform().getRotation();
 		AffineTransform ot = g.getTransform();
-		
-		// transform the coordinate system from world coordinates to local coordinates
 		AffineTransform lt = new AffineTransform();
-		lt.translate(x * scale, y * scale);
+		lt.scale(scale/40,scale/40);
+		lt.translate(x * 40, y * 40);
 		lt.rotate(a);
-		
-		// apply the transform
 		g.transform(lt);
 		g.setColor(cb);
-		g.draw(p);
+		g.fill(drawPath);
 		g.setTransform(ot);
 	}
 	public void render2(Graphics2D g, double scale)
 	{
-		Vector2[] vertices = r.getVertices();
-		int l = vertices.length;
-		
-		// create the awt polygon
-		Path2D.Double p = new Path2D.Double();
-		p.moveTo(vertices[0].x * scale, vertices[0].y * scale);
-		for (int i = 1; i < l; i++) {
-			p.lineTo(vertices[i].x * scale, vertices[i].y * scale);
-		}
-		p.closePath();
-		double width = Math.abs(vertices[3].x-vertices[1].x);
-		double height = Math.abs(vertices[3].y-vertices[1].y);
-		Vector2 center = r.getCenter();
+		double x = this.getWorldCenter().x;
+		double y = this.getWorldCenter().y;
+		double a = this.getTransform().getRotation();
 		AffineTransform ot = g.getTransform();
-		
-		// transform the coordinate system from world coordinates to local coordinates
 		AffineTransform lt = new AffineTransform();
-		lt.translate(x * scale, y * scale);
+		lt.scale(scale/40,scale/40);
+		lt.translate(x * 40, y * 40);
 		lt.rotate(a);
-		
-		// apply the transform
 		g.transform(lt);
 		g.setColor(cf);
-		g.fill(p);
-		if(joints)
+		g.fill(fillPath);
+		g.setTransform(ot);
+		if(isJointed)
 		{
-			g.setStroke(new BasicStroke((int)(scale/20)));
+			g.setStroke(new BasicStroke(2));
 			g.setColor(new Color(150,150,150));
 			Ellipse2D.Double c = new Ellipse2D.Double(
-					(center.x - 0.075) * scale,
-					(center.y - 0.075) * scale,
-					0.15 * scale,
-					0.15 * scale);
+					( - 0.075) * 40,
+					( - 0.075) * 40,
+					0.15 * 40,
+					0.15 * 40);
 			g.draw(c);
 			c = new Ellipse2D.Double(
-					(center.x - 0.075-width/2-0.1) * scale,
-					(center.y - 0.075-height/2-0.1) * scale,
-					0.15 * scale,
-					0.15 * scale);
+					( - 0.075-width/2-0.1) * 40,
+					( - 0.075-height/2-0.1) * 40,
+					0.15 * 40,
+					0.15 * 40);
 			g.draw(c);
 			c = new Ellipse2D.Double(
-					(center.x - 0.075-width/2-0.1) * scale,
-					(center.y - 0.075+height/2+0.1) * scale,
-					0.15 * scale,
-					0.15 * scale);
+					(- 0.075-width/2-0.1) * 40,
+					(- 0.075+height/2+0.1) * 40,
+					0.15 * 40,
+					0.15 * 40);
 			g.draw(c);
 			c = new Ellipse2D.Double(
-					(center.x - 0.075+width/2+0.1) * scale,
-					(center.y - 0.075+height/2+0.1) * scale,
-					0.15 * scale,
-					0.15* scale);
+					(- 0.075+width/2+0.1) * 40,
+					(- 0.075+height/2+0.1) * 40,
+					0.15 * 40,
+					0.15* 40);
 			g.draw(c);
 			c = new Ellipse2D.Double(
-					(center.x - 0.075+width/2+0.1) * scale,
-					(center.y - 0.075-height/2-0.1) * scale,
-					0.15 * scale,
-					0.15 * scale);
+					(- 0.075+width/2+0.1) * 40,
+					(- 0.075-height/2-0.1) * 40,
+					0.15 * 40,
+					0.15 * 40);
 			g.draw(c);
-			
-			g.setStroke(new BasicStroke((int)(scale/5),BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND));
 		}
-		g.setTransform(ot);
 	}
 }

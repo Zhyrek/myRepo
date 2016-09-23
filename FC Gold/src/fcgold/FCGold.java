@@ -398,19 +398,16 @@ public class FCGold extends JFrame {
 	    	}
 	    	else if(temp[0].equals("SC"))
 	    	{
-	    		go = addSC(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80);
-	    		this.world.addBody(go);
+	    		this.world.addBody(new StaticCircle(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80));
 	    	}
 	    	
 	    	else if(temp[0].equals("DR"))
 	    	{
-	    		go = addDR(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6]));
-	    		this.world.addBody(go);
+	    		this.world.addBody(new DynRect(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6])));
 		    }
 	    	else if(temp[0].equals("DC"))
 	    	{
-	    		go = addDC(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, isJointed(temp[5]));
-	    		this.world.addBody(go);
+	    		this.world.addBody(new DynCircle(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, isJointed(temp[5])));
 		    }
 	    	else if(temp[0].equals("CR"))
 	    	{
@@ -447,8 +444,7 @@ public class FCGold extends JFrame {
 			}
 	    	else if(temp[0].equals("GC"))
 	    	{
-	    		go = addGC(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, isJointed(temp[5]));
-	    		this.world.addBody(go);
+	    		this.world.addBody(new GoalCircle(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, isJointed(temp[5])));
 			}
 	    	else if(temp[0].equals("R"))
 	    	{
@@ -1031,9 +1027,6 @@ public class FCGold extends JFrame {
 		for(int i = 0; i < dynRects.size(); i++)
 		{
 			Body go = this.world.getBody(dynRects.get(i).getI());
-			dynRects.get(i).setX(go.getWorldCenter().x);
-			dynRects.get(i).setY(go.getWorldCenter().y);
-			dynRects.get(i).setA(go.getTransform().getRotation());
 		}
 		for(int i = 0; i < dynCircles.size(); i++)
 		{
@@ -1118,6 +1111,8 @@ public class FCGold extends JFrame {
 		}
 		((GamePiece)this.world.getBody(0)).render(g,SCALE);
 		((GamePiece)this.world.getBody(0)).render2(g,SCALE);
+		((GamePiece)this.world.getBody(1)).render(g,SCALE);
+		((GamePiece)this.world.getBody(1)).render2(g,SCALE);
 	}
 	private void renderBacks(Graphics2D g) 
 	{
@@ -1291,7 +1286,7 @@ public class FCGold extends JFrame {
 		b.setDensity(0.5); //1
 		b.setFriction(0.7);
 		b.setRestitution(0.1);
-		b.setFilter(cf1);
+		b.setFilter(new CategoryFilter(1,7));
 		go.addFixture(b);
 		go.setMass(MassType.NORMAL);
 		go.setLinearDamping(1);
@@ -1397,6 +1392,7 @@ public class FCGold extends JFrame {
 	}
 	public Body addGC(double x, double y, double radius, double a, boolean joints)
 	{
+		/*
 		Circle cirShape = new Circle(radius);
 		goalCircles.add(new GoalCircle(new Circle(radius-0.1),x, y, a, joints,this.world.getBodyCount()));
 		Body go = new Body();
@@ -1415,7 +1411,8 @@ public class FCGold extends JFrame {
 		jointLocations.add(new Vector3(x-0.5,y,this.world.getBodyCount()));
 		String[] s = {"GC",""+(x*40),""+(y*40),""+(radius*80),""+(a*180/Math.PI),""+toInt(joints)};
 		go.setUserData(s);
-		return go;
+		*/
+		return new Body();
 	}
 	public Body addR(int type, int b1, double osx1, double osy1, int b2, double osx2, double osy2, double torque1, double torque2)
 	{

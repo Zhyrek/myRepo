@@ -15,7 +15,7 @@ public class GoalRect extends GamePiece{
 	public double x,y,a;
 	public Polygon r;
 	public Color cf = new Color(255,50,50);
-	public Color cb = cf.darker();
+	public Color cb = new Color(189,84,32);
 	public boolean joints;
 	public GoalRect(Convex convex, double d, double e, double f, boolean b, int i) {
 		x = d;

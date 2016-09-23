@@ -23,18 +23,18 @@ public class Wheel extends GamePiece{
 		index = i;
 		if(torque < 0)
 		{
-			cb = new Color(200,50,150);
-			cf = new Color(250,150,250);
+			cb = new Color(203,46,165);
+			cf = new Color(251,201,204);
 		}
 		else if(torque > 0)
 		{
-			cb = new Color(250,120,0);
-			cf = new Color(250,250,0);
+			cb = new Color(243,126,34);
+			cf = new Color(249,243,22);
 		}
 		else
 		{
-			cb = new Color(50,100,250);
-			cf = new Color(150,200,250);
+			cb = new Color(68,82,252);
+			cf = new Color(148,254,225);
 		}
 	}
 	public double getX()

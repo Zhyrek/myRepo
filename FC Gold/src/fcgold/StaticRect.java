@@ -12,8 +12,8 @@ import org.dyn4j.geometry.Rectangle;
 
 public class StaticRect extends GamePiece{
 	Rectangle renderRect;
-	public Color cf = new Color(0, 200,0);
-	public Color cb = cf.darker();
+	public Color cf = new Color(43,197,0);
+	public Color cb = new Color(29,133,1);
 	Path2D.Double fillPath = new Path2D.Double();
 	Path2D.Double drawPath = new Path2D.Double();
 	public StaticRect(double x, double y, double w, double h, double a) {

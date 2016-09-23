@@ -14,8 +14,8 @@ import org.dyn4j.geometry.Vector2;
 public class GoalArea extends GamePiece{
 	public double x,y;
 	public Polygon r;
-	public Color cf = new Color(250, 150, 150);
-	public Color cb = cf.darker();
+	public Color cf = new Color(234,140,146);
+	public Color cb = new Color(180,98,104);
 	public GoalArea(Convex convex, double d, double e, int i) {
 		x = d;
 		y = e;
