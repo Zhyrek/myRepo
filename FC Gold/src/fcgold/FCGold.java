@@ -411,8 +411,7 @@ public class FCGold extends JFrame {
 		    }
 	    	else if(temp[0].equals("CR"))
 	    	{
-	    		go = addCR(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6]));
-	    		this.world.addBody(go);
+	    		this.world.addBody(new CloudRect(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6])));
 			}
 	    	else if(temp[0].equals("BA"))
 	    	{
@@ -698,6 +697,7 @@ public class FCGold extends JFrame {
 					r.render2(g, SCALE);
 				}
 			}
+			/*
 			else if(editorMode == 0)
 			{
 				Wheel w = new Wheel(new Circle(0.4), ex2, ey2, 0,-1, -1);
@@ -716,6 +716,7 @@ public class FCGold extends JFrame {
 				w.render(g, SCALE);
 				w.render2(g, SCALE);
 			}
+			*/
 			else if(editorMode == 3)
 			{
 				double height = Math.hypot(ex1-ex2, ey1-ey2);
@@ -1035,33 +1036,12 @@ public class FCGold extends JFrame {
 			dynCircles.get(i).setY(go.getWorldCenter().y);
 			dynCircles.get(i).setA(go.getTransform().getRotation());
 		}
-		for(int i = 0; i < cloudRects.size(); i++)
-		{
-			Body go = this.world.getBody(cloudRects.get(i).getI());
-			cloudRects.get(i).setX(go.getWorldCenter().x);
-			cloudRects.get(i).setY(go.getWorldCenter().y);
-			cloudRects.get(i).setA(go.getTransform().getRotation());
-		}
-		for(int i = 0; i < goalRects.size(); i++)
-		{
-			Body go = this.world.getBody(goalRects.get(i).getI());
-			goalRects.get(i).setX(go.getWorldCenter().x);
-			goalRects.get(i).setY(go.getWorldCenter().y);
-			goalRects.get(i).setA(go.getTransform().getRotation());
-		}
 		for(int i = 0; i < goalCircles.size(); i++)
 		{
 			Body go = this.world.getBody(goalCircles.get(i).getI());
 			goalCircles.get(i).setX(go.getWorldCenter().x);
 			goalCircles.get(i).setY(go.getWorldCenter().y);
 			goalCircles.get(i).setA(go.getTransform().getRotation());
-		}
-		for(int i = 0; i < wheels.size(); i++)
-		{
-			Body go = this.world.getBody(wheels.get(i).getI());
-			wheels.get(i).setX(go.getWorldCenter().x);
-			wheels.get(i).setY(go.getWorldCenter().y);
-			wheels.get(i).setA(go.getTransform().getRotation());
 		}
 		for(int i = 0; i < rods.size(); i++)
 		{
@@ -1259,45 +1239,6 @@ public class FCGold extends JFrame {
 			return 1;
 		}
 		return 0;
-	}
-	public Body addDC(double x, double y, double radius, double a, boolean joints)
-	{
-		Circle cirShape = new Circle(radius);
-		dynCircles.add(new DynCircle(new Circle(radius-0.1),x, y, a, joints,this.world.getBodyCount()));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(cirShape);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(cf1);
-		go.addFixture(b);
-		go.setMass(MassType.NORMAL);
-		go.translate(x, y);
-		go.rotateAboutCenter(a);
-		String[] s = {"DC",""+(x*40),""+(y*40),""+(radius*80),""+(a*180/Math.PI),""+toInt(joints)};
-		go.setUserData(s);
-		return go;
-	}
-	public Body addCR(double x, double y, double w, double h, double a, boolean joints)
-	{
-		Rectangle floorRect = new Rectangle(w, h);
-		cloudRects.add(new CloudRect(new Rectangle(w-0.2, h-0.2),x, y, a, joints,this.world.getBodyCount()));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(floorRect);
-		b.setDensity(0.5); //1
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(new CategoryFilter(1,7));
-		go.addFixture(b);
-		go.setMass(MassType.NORMAL);
-		go.setLinearDamping(1);
-		go.setAngularDamping(1);
-		go.setGravityScale(-1);//-0.2
-		// move the floor down a bit
-		go.translate(x, y);
-		go.rotateAboutCenter(a);
-		String[] s = {"CR",""+(x*40),""+(y*40),""+(w*40),""+(h*40),""+(a*180/Math.PI),""+toInt(joints)};
-		go.setUserData(s);
-		return go;
 	}
 	public Body addBA(double x, double y, double w, double h)
 	{
