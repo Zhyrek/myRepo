@@ -8,6 +8,7 @@ import java.awt.geom.Ellipse2D;
 
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.collision.CategoryFilter;
+import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Circle;
 
@@ -18,6 +19,70 @@ public class Wheel extends GamePiece{
 	public Color cf;
 	public Color cb;
 	public Wheel(double x, double y, double radius, double angle, double torque)
+	{
+		if(torque < 0)
+		{
+			cb = new Color(203,46,165);
+			cf = new Color(251,201,204);
+		}
+		else if(torque > 0)
+		{
+			cb = new Color(243,126,34);
+			cf = new Color(249,243,22);
+		}
+		else
+		{
+			cb = new Color(68,82,252);
+			cf = new Color(148,254,225);
+		}
+		Circle cirShape = new Circle(radius);
+		drawPath = new Ellipse2D.Double(
+				(- radius) * 40,
+				(- radius) * 40,
+				radius * 80,
+				radius * 80);
+		fillPath = new Ellipse2D.Double(
+				(- radius) * 40+4,
+				(- radius) * 40+4,
+				radius * 80-8,
+				radius * 80-8);
+		jointLocations[0] = new Ellipse2D.Double(
+				(- 0.075) * 40,
+				(- 0.075) * 40,
+				0.15 * 40,
+				0.15 * 40);
+		jointLocations[1] = new Ellipse2D.Double(
+				(- 0.075-radius) * 40,
+				(- 0.075) * 40,
+				0.15 * 40,
+				0.15 * 40);
+		jointLocations[2] = new Ellipse2D.Double(
+				(- 0.075) * 40,
+				(- 0.075+radius) * 40,
+				0.15 * 40,
+				0.15 * 40);
+		jointLocations[3] = new Ellipse2D.Double(
+				(- 0.075+radius) * 40,
+				(- 0.075) * 40,
+				0.15 * 40,
+				0.15* 40);
+		jointLocations[4] = new Ellipse2D.Double(
+				(- 0.075) * 40,
+				(- 0.075-radius) * 40,
+				0.15 * 40,
+				0.15 * 40);
+		BodyFixture b1 = new BodyFixture(cirShape);
+		b1.setFriction(0.7);
+		b1.setRestitution(0.1);
+		b1.setFilter(new CategoryFilter(2,3));
+		this.addFixture(b1);
+		this.setMass(MassType.NORMAL);
+		this.translate(x, y);
+		this.rotateAboutCenter(angle);
+		String[] s = {"GC",""+(x*40),""+(y*40),""+(radius*80),""+(angle*180/Math.PI),""+torque};
+		this.setUserData(s);
+	}
+	public Wheel(double x, double y, double radius, double angle, double torque, Body body2)
 	{
 		if(torque < 0)
 		{

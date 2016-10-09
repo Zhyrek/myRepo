@@ -415,31 +415,26 @@ public class FCGold extends JFrame {
 			}
 	    	else if(temp[0].equals("BA"))
 	    	{
-	    		go = addBA(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40);
-	    		this.world.addBody(go);
+	    		this.world.addBody(new BuildArea(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40));
 			}
 	    	else if(temp[0].equals("GA"))
 	    	{
-	    		go = addGA(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40);
-	    		this.world.addBody(go);
+	    		this.world.addBody(new GoalArea(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40));
 			}
 	    	else if(temp[0].equals("W"))
 	    	{
 	    		if(temp.length > 6)
 	    		{
-	    			go = addW(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, Double.valueOf(temp[5]), Integer.valueOf(temp[6]));
-	    			this.world.addBody(go);
+	    			this.world.addBody(new Wheel(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, Double.valueOf(temp[5]), this.world.getBody(Integer.valueOf(temp[6]))));
 	    		}
 	    		else
 	    		{
-	    			go = addW(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, Double.valueOf(temp[5]));
-	    			this.world.addBody(go);
+	    			this.world.addBody(new Wheel(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, Double.valueOf(temp[5])));
 	    		}
 	    	}
 	    	else if(temp[0].equals("GR"))
 	    	{
-	    		go = addGR(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6]));
-	    		this.world.addBody(go);
+	    		this.world.addBody(new GoalRect(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6])));
 			}
 	    	else if(temp[0].equals("GC"))
 	    	{
@@ -784,18 +779,15 @@ public class FCGold extends JFrame {
 		Body go;
 		if(editorMode == 0)
 		{
-			go = addW(ex2,ey2,0.5,0,-100);
-			this.world.addBody(go);
+			this.world.addBody(new Wheel(ex2,ey2,0.5,0,-100));
 		}
 		else if(editorMode == 1)
 		{
-			go = addW(ex2,ey2,0.5,0,0);
-			this.world.addBody(go);
+			this.world.addBody(new Wheel(ex2,ey2,0.5,0,0));
 		}
 		else if(editorMode == 2)
 		{
-			go = addW(ex2,ey2,0.5,0,100);
-			this.world.addBody(go);
+			this.world.addBody(new Wheel(ex2,ey2,0.5,0,100));
 		}
 		else
 		{
@@ -1198,162 +1190,6 @@ public class FCGold extends JFrame {
 		
 		// start it
 		window.start();
-	}
-	public Body addSC(double x, double y, double radius)
-	{
-		Circle cirShape = new Circle(radius);
-		staticCircles.add(new StaticCircle(new Circle(radius-0.1), x, y));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(cirShape);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(cf1);
-		go.addFixture(b);
-		go.setMass(MassType.INFINITE);
-		go.translate(x, y);
-		String[] s = {"SC",""+(x*40),""+(y*40),""+(radius*40)};
-		go.setUserData(s);
-		return go;
-	}
-	public Body addDR(double x, double y, double w, double h, double a, boolean joints)
-	{
-		Rectangle floorRect = new Rectangle(w, h);
-		dynRects.add(new DynRect(new Rectangle(w-0.2, h-0.2),x, y, a, joints,this.world.getBodyCount()));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(floorRect);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(cf1);
-		go.addFixture(b);
-		go.setMass(MassType.NORMAL);
-		// move the floor down a bit
-		go.translate(x, y);
-		go.rotateAboutCenter(a);
-		String[] s = {"DR",""+(x*40),""+(y*40),""+(w*40),""+(h*40),""+(a*180/Math.PI),""+toInt(joints)};
-		go.setUserData(s);
-		return go;
-	}
-	private int toInt(boolean joints) {
-		if(joints)
-		{
-			return 1;
-		}
-		return 0;
-	}
-	public Body addBA(double x, double y, double w, double h)
-	{
-		Rectangle floorRect = new Rectangle(w, h);
-		buildAreas.add(new BuildArea(new Rectangle(w-0.2, h-0.2),x, y,this.world.getBodyCount()));
-		Body go = new Body();
-		go.addFixture(new BodyFixture(floorRect));
-		go.setMass(MassType.NORMAL);
-		go.setActive(false);
-		// move the floor down a bit
-		go.translate(x, y);
-		String[] s = {"BA",""+(x*40),""+(y*40)+","+(w*40),""+(h*40)};
-		go.setUserData(s);
-		return go;
-	}
-	public Body addGA(double x, double y, double w, double h)
-	{
-		Rectangle floorRect = new Rectangle(w, h);
-		goalAreas.add(new GoalArea(new Rectangle(w-0.2, h-0.2),x, y,this.world.getBodyCount()));
-		Body go = new Body();
-		go.addFixture(new BodyFixture(floorRect));
-		go.setMass(MassType.NORMAL);
-		go.setActive(false);
-		// move the floor down a bit
-		go.translate(x, y);
-		String[] s = {"GA",""+(x*40),""+(y*40)+","+(w*40),""+(h*40)};
-		go.setUserData(s);
-		return go;
-	}
-	public Body addW(double x, double y, double radius, double a, double torque)
-	{
-		Circle cirShape = new Circle(radius);
-		wheels.add(new Wheel(new Circle(radius-0.1),x, y,a,torque,this.world.getBodyCount()));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(cirShape);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(cf2);
-		go.addFixture(b);
-		go.setMass(MassType.NORMAL);
-		go.translate(x, y);
-		go.rotateAboutCenter(a);
-		String[] s = {"W",""+(x*40),""+(y*40),""+(radius*80),""+(a*180/Math.PI),""+torque};
-		go.setUserData(s);
-		return go;
-	}
-	public Body addW(double x, double y, double radius, double a, double torque, int body)
-	{
-		Circle cirShape = new Circle(radius);
-		wheels.add(new Wheel(new Circle(radius-0.1),x, y,a,torque,this.world.getBodyCount()));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(cirShape);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(cf2);
-		go.addFixture(b);
-		go.setMass(MassType.NORMAL);
-		go.translate(x, y);
-		go.rotateAboutCenter(a);
-		String[] s = {"W",""+(x*40),""+(y*40),""+(radius*80),""+(a*180/Math.PI),""+torque,""+body};
-		go.setUserData(s);
-		
-			Body go2 = this.world.getBody(body);
-			RevoluteJoint rj1 = new RevoluteJoint(go, go2, go.getWorldCenter());
-			double d = torque;
-			if(d != 0)
-			{
-				rj1.setMotorSpeed(2*Math.PI*d/Math.abs(d));
-	    		rj1.setMaximumMotorTorque(Math.abs(d));
-	    		rj1.setMotorEnabled(true);
-			}
-			this.world.addJoint(rj1);
-		return go;
-	}
-	public Body addGR(double x, double y, double w, double h, double a, boolean joints)
-	{
-		Rectangle floorRect = new Rectangle(w, h);
-		goalRects.add(new GoalRect(new Rectangle(w-0.2, h-0.2),x, y, a, joints,this.world.getBodyCount()));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(floorRect);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(cf2);
-		go.addFixture(b);
-		go.setMass(MassType.NORMAL);
-		// move the floor down a bit
-		go.translate(x, y);
-		go.rotateAboutCenter(a);
-		String[] s = {"GR",""+(x*40),""+(y*40),""+(w*40),""+(h*40),""+(a*180/Math.PI),""+toInt(joints)};
-		go.setUserData(s);
-		return go;
-	}
-	public Body addGC(double x, double y, double radius, double a, boolean joints)
-	{
-		/*
-		Circle cirShape = new Circle(radius);
-		goalCircles.add(new GoalCircle(new Circle(radius-0.1),x, y, a, joints,this.world.getBodyCount()));
-		Body go = new Body();
-		BodyFixture b = new BodyFixture(cirShape);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setFilter(cf2);
-		go.addFixture(b);
-		go.setMass(MassType.NORMAL);
-		go.translate(x, y);
-		go.rotateAboutCenter(a);
-		jointLocations.add(new Vector3(x,y,this.world.getBodyCount()));
-		jointLocations.add(new Vector3(x+0.5,y,this.world.getBodyCount()));
-		jointLocations.add(new Vector3(x,y+0.5,this.world.getBodyCount()));
-		jointLocations.add(new Vector3(x,y-0.5,this.world.getBodyCount()));
-		jointLocations.add(new Vector3(x-0.5,y,this.world.getBodyCount()));
-		String[] s = {"GC",""+(x*40),""+(y*40),""+(radius*80),""+(a*180/Math.PI),""+toInt(joints)};
-		go.setUserData(s);
-		*/
-		return new Body();
 	}
 	public Body addR(int type, int b1, double osx1, double osy1, int b2, double osx2, double osy2, double torque1, double torque2)
 	{
