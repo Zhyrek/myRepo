@@ -382,8 +382,8 @@ public class FCGold extends JFrame {
 		System.out.println(settings.getLinearTolerance());
 		settings.setBaumgarte(0.001); //eh
 		settings.setLinearTolerance(0.0005); //ehh
-		settings.setPositionConstraintSolverIterations(1000);
-		settings.setVelocityConstraintSolverIterations(1000); //ehhhhh
+		settings.setPositionConstraintSolverIterations(100);
+		settings.setVelocityConstraintSolverIterations(100); //ehhhhh
 		this.world.setSettings(settings); //its kinda like fc
 		String[] str = s.split(";"); //split design string into string array, by the character ;
 		String[] temp;//dummy var, to store string fragments in

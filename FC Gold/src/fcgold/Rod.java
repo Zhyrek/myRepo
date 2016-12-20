@@ -8,7 +8,12 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 
+import org.dyn4j.collision.CategoryFilter;
+import org.dyn4j.collision.Filter;
+import org.dyn4j.dynamics.Body;
+import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Convex;
+import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
 
@@ -17,6 +22,60 @@ public class Rod extends GamePiece{
 	public Rectangle r;
 	public Color cf;
 	public Color cb;
+	public CategoryFilter cf2 = new CategoryFilter(2,3);
+	public CategoryFilter cf3 = new CategoryFilter(4,1);
+	public CategoryFilter cf4 = new CategoryFilter(8,0);
+	public Rod(int type, double x1, double y1, double x2, double y2)
+	{
+		Vector2 point1 = new Vector2(x1,y1);
+		Vector2 point2 = new Vector2(x1,y1);
+		double height = Math.abs(point1.distance(point2));
+		Vector2 midpoint = point1.copy();
+		midpoint.add(point2);
+		midpoint.setMagnitude(midpoint.getMagnitude()/2);
+		double a = (point2.copy().difference(point1)).getDirection();
+		if(type == 0)
+		{
+			Rectangle floorRect = new Rectangle(height, 0.1);
+    		BodyFixture b = new BodyFixture(floorRect);
+    		b.setFriction(0.7);
+    		b.setRestitution(0.1);
+    		b.setFilter(cf3);
+    		this.addFixture(b);
+		}
+		else if(type == 1)
+		{
+			Rectangle floorRect = new Rectangle(height, 0.2);
+    		BodyFixture b = new BodyFixture(floorRect);
+    		b.setFriction(0.7);
+    		b.setRestitution(0.1);
+    		b.setFilter(cf2);
+    		this.addFixture(b);
+		}
+		else if(type == 2)
+		{
+			Rectangle floorRect = new Rectangle(height, 0.2);
+    		BodyFixture b = new BodyFixture(floorRect);
+    		b.setFriction(0.7);
+    		b.setRestitution(0.1);
+    		b.setFilter(cf2);
+    		b.setDensity(20);
+    		this.addFixture(b);
+		}
+		else
+		{
+			Rectangle floorRect = new Rectangle(height, 0.1);
+    		BodyFixture b = new BodyFixture(floorRect);
+    		b.setFriction(0.7);
+    		b.setRestitution(0.1);
+    		b.setFilter(cf4);
+    		this.addFixture(b);
+		}
+		this.setMass(MassType.NORMAL);
+		// move the floor down a bit
+		this.translate(midpoint);
+		this.rotateAboutCenter(a);
+	}
 	public Rod(int type, Convex convex, double d, double e, double f, int i) {
 		if(type == 0)
 		{
@@ -43,6 +102,31 @@ public class Rod extends GamePiece{
 		a = f;
 		r = (Rectangle)convex;
 		index = i;
+	}
+	public void adjustShape(double x1, double y1, double x2, double y2)
+	{
+		double density = this.getFixture(0).getDensity();
+		Filter caFi = this.getFixture(0).getFilter();
+		
+		Vector2 point1 = new Vector2(x1,y1);
+		Vector2 point2 = new Vector2(x1,y1);
+		double height = Math.abs(point1.distance(point2));
+		Vector2 midpoint = point1.copy();
+		midpoint.add(point2);
+		midpoint.setMagnitude(midpoint.getMagnitude()/2);
+		double a = (point2.copy().difference(point1)).getDirection();
+		
+		this.removeAllFixtures();
+		Rectangle floorRect = new Rectangle(height, 0.1);
+		BodyFixture b = new BodyFixture(floorRect);
+		b.setFriction(0.7);
+		b.setRestitution(0.1);
+		b.setDensity(density);
+		b.setFilter(caFi);
+		this.addFixture(b);
+		
+		this.translate(midpoint);
+		this.rotateAboutCenter(a);
 	}
 	public double getX()
 	{

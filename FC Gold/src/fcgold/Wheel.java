@@ -18,8 +18,10 @@ public class Wheel extends GamePiece{
 	Ellipse2D.Double[] jointLocations = new Ellipse2D.Double[5];
 	public Color cf;
 	public Color cb;
-	public Wheel(double x, double y, double radius, double angle, double torque)
+	public double torque = 0;
+	public Wheel(double x, double y, double radius, double angle, double t)
 	{
+		torque = t;
 		if(torque < 0)
 		{
 			cb = new Color(203,46,165);
@@ -145,6 +147,10 @@ public class Wheel extends GamePiece{
 		this.rotateAboutCenter(angle);
 		String[] s = {"GC",""+(x*40),""+(y*40),""+(radius*80),""+(angle*180/Math.PI),""+torque};
 		this.setUserData(s);
+	}
+	public double getT()
+	{
+		return torque;
 	}
 	public void render(Graphics2D g, double scale)
 	{
