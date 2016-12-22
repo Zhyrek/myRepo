@@ -1081,10 +1081,20 @@ public class FCGold extends JFrame {
 		{
 			rods.get(i).render2(g,SCALE);
 		}
-		((GamePiece)this.world.getBody(0)).render(g,SCALE);
-		((GamePiece)this.world.getBody(0)).render2(g,SCALE);
-		((GamePiece)this.world.getBody(1)).render(g,SCALE);
-		((GamePiece)this.world.getBody(1)).render2(g,SCALE);
+		for(Body b: this.world.getBodies())
+		{
+			if(b instanceof GamePiece)
+			{
+				((GamePiece) b).render(g,  SCALE);
+			}
+		}
+		for(Body b: this.world.getBodies())
+		{
+			if(b instanceof GamePiece)
+			{
+				((GamePiece) b).render2(g,  SCALE);
+			}
+		}
 	}
 	private void renderBacks(Graphics2D g) 
 	{

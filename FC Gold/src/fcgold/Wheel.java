@@ -81,7 +81,7 @@ public class Wheel extends GamePiece{
 		this.setMass(MassType.NORMAL);
 		this.translate(x, y);
 		this.rotateAboutCenter(angle);
-		String[] s = {"GC",""+(x*40),""+(y*40),""+(radius*80),""+(angle*180/Math.PI),""+torque};
+		String[] s = {"W",""+(x*40),""+(y*40),""+(radius*80),""+(angle*180/Math.PI),""+torque};
 		this.setUserData(s);
 	}
 	public Wheel(double x, double y, double radius, double angle, double torque, Body body2)
