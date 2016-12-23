@@ -11,6 +11,7 @@ import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
+import org.dyn4j.geometry.Vector3;
 
 public class DynRect extends GamePiece{
 	Rectangle renderRect;
@@ -124,5 +125,25 @@ public class DynRect extends GamePiece{
 					0.15 * 40);
 			g.draw(c);
 		}
+	}
+	public Vector3[] getJointVectors()
+	{
+		if(isJointed)
+		{
+			double a = this.getTransform().getRotation();
+			Vector3[] v = new Vector3[5];
+			double wc = width*Math.cos(a);
+			double ws = width*Math.sin(a);
+			double hc = height*Math.cos(a);
+			double hs = height*Math.sin(a);
+			
+			v[0] = new Vector3(getWorldCenter().x, getWorldCenter().y, 0);
+			v[1] = new Vector3(getWorldCenter().x+wc+hs, getWorldCenter().y+ws-hc, 0);
+			v[2] = new Vector3(getWorldCenter().x+wc-hs, getWorldCenter().y+ws+hc, 0);
+			v[3] = new Vector3(getWorldCenter().x-wc+hs, getWorldCenter().y-ws-hc, 0);		
+			v[4] = new Vector3(getWorldCenter().x-wc-hs, getWorldCenter().y-ws+hc, 0);
+			return v;
+		}
+		return null;
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import org.dyn4j.dynamics.Body;
+import org.dyn4j.geometry.Vector3;
 
 public class GamePiece extends Body{
 	int index;
@@ -14,6 +15,10 @@ public class GamePiece extends Body{
 	public int getI()
 	{
 		return index;
+	}
+	public Vector3[] getJointVectors()
+	{
+		return null;
 	}
 	public void adjustIndex(ArrayList<Integer> a)
 	{

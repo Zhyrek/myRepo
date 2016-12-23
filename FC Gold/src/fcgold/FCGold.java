@@ -102,7 +102,7 @@ public class FCGold extends JFrame {
 	 */
 	
 	//mech test level
-	public static String levelData = "SR,250,440,500,60,0;GC,150,100,40,0,1";
+	public static String levelData = "BA,-133.55,58.6,353.3,100.0,0;SR,250,440,500,60,0;GC,150,100,40,0,1";
 			
 	public static double xPos = 400;
 	public static double yPos = 300;
@@ -1024,16 +1024,10 @@ public class FCGold extends JFrame {
 		for(int i = 0; i < dynCircles.size(); i++)
 		{
 			Body go = this.world.getBody(dynCircles.get(i).getI());
-			dynCircles.get(i).setX(go.getWorldCenter().x);
-			dynCircles.get(i).setY(go.getWorldCenter().y);
-			dynCircles.get(i).setA(go.getTransform().getRotation());
 		}
 		for(int i = 0; i < goalCircles.size(); i++)
 		{
 			Body go = this.world.getBody(goalCircles.get(i).getI());
-			goalCircles.get(i).setX(go.getWorldCenter().x);
-			goalCircles.get(i).setY(go.getWorldCenter().y);
-			goalCircles.get(i).setA(go.getTransform().getRotation());
 		}
 		for(int i = 0; i < rods.size(); i++)
 		{
@@ -1083,14 +1077,42 @@ public class FCGold extends JFrame {
 		}
 		for(Body b: this.world.getBodies())
 		{
-			if(b instanceof GamePiece)
+			if(b instanceof BuildArea)
 			{
 				((GamePiece) b).render(g,  SCALE);
 			}
 		}
 		for(Body b: this.world.getBodies())
 		{
-			if(b instanceof GamePiece)
+			if(b instanceof BuildArea)
+			{
+				((GamePiece) b).render2(g,  SCALE);
+			}
+		}
+		for(Body b: this.world.getBodies())
+		{
+			if(b instanceof GoalArea)
+			{
+				((GamePiece) b).render(g,  SCALE);
+			}
+		}
+		for(Body b: this.world.getBodies())
+		{
+			if(b instanceof GoalArea)
+			{
+				((GamePiece) b).render2(g,  SCALE);
+			}
+		}
+		for(Body b: this.world.getBodies())
+		{
+			if(b instanceof GamePiece && (!(b instanceof BuildArea)) && (!(b instanceof GoalArea)))
+			{
+				((GamePiece) b).render(g,  SCALE);
+			}
+		}
+		for(Body b: this.world.getBodies())
+		{
+			if(b instanceof GamePiece && (!(b instanceof BuildArea)) && (!(b instanceof GoalArea)))
 			{
 				((GamePiece) b).render2(g,  SCALE);
 			}

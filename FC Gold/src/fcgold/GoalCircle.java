@@ -7,12 +7,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Vector3;
 import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Circle;
 
 public class GoalCircle extends GamePiece{
-	public double x,y,a;
 	public boolean joints;
 	public Circle r;
 	Ellipse2D.Double drawPath;
@@ -20,7 +20,7 @@ public class GoalCircle extends GamePiece{
 	Ellipse2D.Double[] jointLocations = new Ellipse2D.Double[5];
 	public Color cf = new Color(246,93,106);
 	public Color cb = new Color(180,98,104);
-	public GoalCircle(double x, double y, double radius, double angle, boolean b)
+	public GoalCircle(double x, double y, double radius, double a, boolean b)
 	{
 		joints = b;
 		Circle cirShape = new Circle(radius);
@@ -77,30 +77,6 @@ public class GoalCircle extends GamePiece{
 		}
 		return 0;
 	}
-	public double getX()
-	{
-		return x;
-	}
-	public double getY()
-	{
-		return y;
-	}
-	public double getA()
-	{
-		return a;
-	}
-	public void setX(double d)
-	{
-		x = d;
-	}
-	public void setY(double d)
-	{
-		y = d;
-	}
-	public void setA(double d)
-	{
-		a = d;
-	}
 	public void render(Graphics2D g, double scale)
 	{
 		double x = this.getWorldCenter().x;
@@ -144,5 +120,20 @@ public class GoalCircle extends GamePiece{
 			}
 		}
 		g.setTransform(ot);
+	}
+	public Vector3[] getJointVectors()
+	{
+		if(joints)
+		{
+			double a = this.getTransform().getRotation();
+			Vector3[] v = new Vector3[5];
+			v[5] = new Vector3(getWorldCenter().x, getWorldCenter().y, 0);
+			for(int i = 0; i < 4; i++)
+			{
+				v[i] = new Vector3(getWorldCenter().x+(radius*Math.cos(a+Math.PI/2*i)), getWorldCenter().y+(radius*Math.sin(a+Math.PI/2*i)), 0);
+			}
+			return v;
+		}
+		return null;
 	}
 }

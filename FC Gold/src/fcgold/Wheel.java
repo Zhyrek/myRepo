@@ -7,20 +7,23 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Vector3;
 import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Circle;
 
 public class Wheel extends GamePiece{
+	double radius;
 	Ellipse2D.Double drawPath;
 	Ellipse2D.Double fillPath;
 	Ellipse2D.Double[] jointLocations = new Ellipse2D.Double[5];
 	public Color cf;
 	public Color cb;
 	public double torque = 0;
-	public Wheel(double x, double y, double radius, double angle, double t)
+	public Wheel(double x, double y, double rad, double a, double t)
 	{
+		radius = rad;
 		torque = t;
 		if(torque < 0)
 		{
@@ -80,8 +83,8 @@ public class Wheel extends GamePiece{
 		this.addFixture(b1);
 		this.setMass(MassType.NORMAL);
 		this.translate(x, y);
-		this.rotateAboutCenter(angle);
-		String[] s = {"W",""+(x*40),""+(y*40),""+(radius*80),""+(angle*180/Math.PI),""+torque};
+		this.rotateAboutCenter(a);
+		String[] s = {"W",""+(x*40),""+(y*40),""+(radius*80),""+(a*180/Math.PI),""+torque};
 		this.setUserData(s);
 	}
 	public Wheel(double x, double y, double radius, double angle, double torque, Body body2)
@@ -192,5 +195,16 @@ public class Wheel extends GamePiece{
 			g.draw(jointLocations[i]);
 		}
 		g.setTransform(ot);
+	}
+	public Vector3[] getJointVectors()
+	{
+		double a = this.getTransform().getRotation();
+		Vector3[] v = new Vector3[5];
+		v[5] = new Vector3(getWorldCenter().x, getWorldCenter().y, 0);
+		for(int i = 0; i < 4; i++)
+		{
+			v[i] = new Vector3(getWorldCenter().x+(radius*Math.cos(a+Math.PI/2*i)), getWorldCenter().y+(radius*Math.sin(a+Math.PI/2*i)), 0);
+		}
+		return v;
 	}
 }
