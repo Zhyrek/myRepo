@@ -127,7 +127,7 @@ public class GoalCircle extends GamePiece{
 		{
 			double a = this.getTransform().getRotation();
 			Vector3[] v = new Vector3[5];
-			v[5] = new Vector3(getWorldCenter().x, getWorldCenter().y, 0);
+			v[4] = new Vector3(getWorldCenter().x, getWorldCenter().y, 0);
 			for(int i = 0; i < 4; i++)
 			{
 				v[i] = new Vector3(getWorldCenter().x+(radius*Math.cos(a+Math.PI/2*i)), getWorldCenter().y+(radius*Math.sin(a+Math.PI/2*i)), 0);

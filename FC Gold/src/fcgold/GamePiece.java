@@ -18,7 +18,7 @@ public class GamePiece extends Body{
 	}
 	public Vector3[] getJointVectors()
 	{
-		return null;
+		return new Vector3[0];
 	}
 	public void adjustIndex(ArrayList<Integer> a)
 	{

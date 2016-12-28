@@ -125,9 +125,9 @@ public class FCGold extends JFrame {
 	protected Canvas canvas;
 	
 	/** The dynamics engine */
-	protected World world;
+	protected DesignEditor world;
 	
-	/** Wether the example is stopped or not */
+	/** Whether the example is stopped or not */
 	protected boolean stopped;
 	
 	/** The time stamp for the last iteration */
@@ -376,89 +376,7 @@ public class FCGold extends JFrame {
 	}
 	protected void initializeWorld(String s) {
 		// create the world
-		this.world = new World();
-		this.world.setGravity(new Vector2(0.0,9.8));//set gravity, 9.8m/s2 down
-		Settings settings = new Settings(); //adjust settings here!
-		System.out.println(settings.getLinearTolerance());
-		settings.setBaumgarte(0.001); //eh
-		settings.setLinearTolerance(0.0005); //ehh
-		settings.setPositionConstraintSolverIterations(100);
-		settings.setVelocityConstraintSolverIterations(100); //ehhhhh
-		this.world.setSettings(settings); //its kinda like fc
-		String[] str = s.split(";"); //split design string into string array, by the character ;
-		String[] temp;//dummy var, to store string fragments in
-		double d2r = Math.PI/180; //degrees to radians conversion
-		Body go; //dummy body
-	    for(int i = 0; i < str.length; i++) //add objects for each string fragment
-	    {
-	    	temp = str[i].split(",");
-	    	if(temp[0].equals("SR"))
-	    	{
-	    		this.world.addBody(new StaticRect(Double.valueOf(temp[1])/40,Double.valueOf(temp[1])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r));
-	    	}
-	    	else if(temp[0].equals("SC"))
-	    	{
-	    		this.world.addBody(new StaticCircle(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80));
-	    	}
-	    	
-	    	else if(temp[0].equals("DR"))
-	    	{
-	    		this.world.addBody(new DynRect(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6])));
-		    }
-	    	else if(temp[0].equals("DC"))
-	    	{
-	    		this.world.addBody(new DynCircle(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, isJointed(temp[5])));
-		    }
-	    	else if(temp[0].equals("CR"))
-	    	{
-	    		this.world.addBody(new CloudRect(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6])));
-			}
-	    	else if(temp[0].equals("BA"))
-	    	{
-	    		this.world.addBody(new BuildArea(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40));
-			}
-	    	else if(temp[0].equals("GA"))
-	    	{
-	    		this.world.addBody(new GoalArea(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40));
-			}
-	    	else if(temp[0].equals("W"))
-	    	{
-	    		if(temp.length > 6)
-	    		{
-	    			this.world.addBody(new Wheel(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, Double.valueOf(temp[5]), this.world.getBody(Integer.valueOf(temp[6]))));
-	    		}
-	    		else
-	    		{
-	    			this.world.addBody(new Wheel(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, Double.valueOf(temp[5])));
-	    		}
-	    	}
-	    	else if(temp[0].equals("GR"))
-	    	{
-	    		this.world.addBody(new GoalRect(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40,Double.valueOf(temp[5])*d2r, isJointed(temp[6])));
-			}
-	    	else if(temp[0].equals("GC"))
-	    	{
-	    		this.world.addBody(new GoalCircle(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/80,Double.valueOf(temp[4])*d2r, isJointed(temp[5])));
-			}
-	    	else if(temp[0].equals("R"))
-	    	{
-	    		if(temp.length > 8)
-	    		{
-	    			go = addR(Integer.valueOf(temp[1]), Integer.valueOf(temp[2]),Double.valueOf(temp[3]), Double.valueOf(temp[4]),Integer.valueOf(temp[5]),Double.valueOf(temp[6]), Double.valueOf(temp[7]),Double.valueOf(temp[8]),Double.valueOf(temp[9]));
-	    			this.world.addBody(go);
-	    		}
-	    		else
-	    		{
-	    			go = addR(Integer.valueOf(temp[1]), Integer.valueOf(temp[2]),Double.valueOf(temp[3]), Double.valueOf(temp[4]),Integer.valueOf(temp[5]),Double.valueOf(temp[6]), Double.valueOf(temp[7]));
-	    			this.world.addBody(go);
-	    		}
-	    	}
-	    	else if(temp[0].equals("J"))
-	    	{
-	    		go = addJ(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40);
-	    		this.world.addBody(go);
-			}
-	    }
+		this.world = new DesignEditor(s);
 	}
 	/**
 	 * Start active rendering the example.
@@ -920,7 +838,7 @@ public class FCGold extends JFrame {
 		{
 			for(int j = 0; j < goalCircles.size(); j++)
 			{
-				if(goalCircles.get(j).getI() == rodIndices.get(0))
+				if(this.world.getBodies().indexOf(goalCircles.get(j)) == rodIndices.get(0))
 				{
 					goalCircles.remove(j);
 					break;
@@ -941,7 +859,7 @@ public class FCGold extends JFrame {
 			{
 				for(int j = 0; j < rods.size(); j++)
 				{
-					if(rods.get(j).getI() == i)
+					if(i(rods.get(j)) == i)
 					{
 						rods.remove(j);
 						break;
@@ -985,6 +903,10 @@ public class FCGold extends JFrame {
 		s[5] = ""+j2;
 		body.setUserData(s);
 	}
+	public int i(Body b)
+	{
+		return this.world.getBodies().indexOf(b);
+	}
 	public double sc(double d)
 	{
 		if(d < 0.01)
@@ -1010,71 +932,11 @@ public class FCGold extends JFrame {
 		g.translate(0.0, -1.0 * SCALE);
 		
 		// draw all the objects in the world
-		updatePositions();
-		renderBacks(g);
-		renderFronts(g);
+		renderPieces(g);
 		renderActiveObject(g);
 	}
-	private void updatePositions() 
+	private void renderPieces(Graphics2D g) 
 	{
-		for(int i = 0; i < dynRects.size(); i++)
-		{
-			Body go = this.world.getBody(dynRects.get(i).getI());
-		}
-		for(int i = 0; i < dynCircles.size(); i++)
-		{
-			Body go = this.world.getBody(dynCircles.get(i).getI());
-		}
-		for(int i = 0; i < goalCircles.size(); i++)
-		{
-			Body go = this.world.getBody(goalCircles.get(i).getI());
-		}
-		for(int i = 0; i < rods.size(); i++)
-		{
-			Body go = this.world.getBody(rods.get(i).getI());
-			rods.get(i).setX(go.getWorldCenter().x);
-			rods.get(i).setY(go.getWorldCenter().y);
-			rods.get(i).setA(go.getTransform().getRotation());
-		}
-	}
-	private void renderFronts(Graphics2D g) 
-	{
-		for(int i = 0; i < staticRects.size(); i++)
-		{
-			staticRects.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < staticCircles.size(); i++)
-		{
-			staticCircles.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < dynRects.size(); i++)
-		{
-			dynRects.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < cloudRects.size(); i++)
-		{
-			cloudRects.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < dynCircles.size(); i++)
-		{
-			dynCircles.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < goalRects.size(); i++)
-		{
-			goalRects.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < goalCircles.size(); i++)
-		{
-			goalCircles.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < wheels.size(); i++)
-		{
-			wheels.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < rods.size(); i++)
-		{
-			rods.get(i).render2(g,SCALE);
-		}
 		for(Body b: this.world.getBodies())
 		{
 			if(b instanceof BuildArea)
@@ -1116,61 +978,6 @@ public class FCGold extends JFrame {
 			{
 				((GamePiece) b).render2(g,  SCALE);
 			}
-		}
-	}
-	private void renderBacks(Graphics2D g) 
-	{
-		for(int i = 0; i < buildAreas.size(); i++)
-		{
-			buildAreas.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < buildAreas.size(); i++)
-		{
-			buildAreas.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < goalAreas.size(); i++)
-		{
-			goalAreas.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < goalAreas.size(); i++)
-		{
-			goalAreas.get(i).render2(g,SCALE);
-		}
-		for(int i = 0; i < staticRects.size(); i++)
-		{
-			staticRects.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < staticCircles.size(); i++)
-		{
-			staticCircles.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < dynRects.size(); i++)
-		{
-			dynRects.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < cloudRects.size(); i++)
-		{
-			cloudRects.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < dynCircles.size(); i++)
-		{
-			dynCircles.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < goalRects.size(); i++)
-		{
-			goalRects.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < goalCircles.size(); i++)
-		{
-			goalCircles.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < wheels.size(); i++)
-		{
-			wheels.get(i).render(g,SCALE);
-		}
-		for(int i = 0; i < rods.size(); i++)
-		{
-			rods.get(i).render(g,SCALE);
 		}
 	}
 	/**

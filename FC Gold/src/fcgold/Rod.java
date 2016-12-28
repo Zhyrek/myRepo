@@ -17,20 +17,23 @@ import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
 
 public class Rod extends GamePiece{
-	public double x,y,a;
+	public double x,y,a,width,height;
+	public double density = 1;
 	public Rectangle r;
 	public Color cf;
 	public Color cb;
 	public CategoryFilter cf2 = new CategoryFilter(2,3);
 	public CategoryFilter cf3 = new CategoryFilter(4,1);
 	public CategoryFilter cf4 = new CategoryFilter(8,0);
-	public Vector2 p1;
-	public Vector2 p2;
+	public CategoryFilter filter = cf2;
+	public Vector2 p1, p2, offset1, offset2;
+	public int joint1, joint2;
 	public Rod(int type, Convex convex, double d, double e, double f, int i) {
 		if(type == 0)
 		{
 			cf = new Color(0,0,255);
 			cb = Color.white;
+			filter = cf3;
 		}
 		else if(type == 1)
 		{
@@ -41,23 +44,131 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(255,200,0);
 			cb = cf.brighter();
+			density = 20;
 		}
 		else
 		{
 			cf = new Color(200,255,200);
 			cb = cf.darker();
+			filter = cf4;
 		}
 		x = d;
 		y = e;
 		a = f;
 		r = (Rectangle)convex;
+		width = r.getWidth();
 		index = i;
 	}
-	public Rod(int type, double x1, double y1, double x2, double y2)
+	public Rod(int type, int j1, double x1, double y1, int j2, double x2, double y2)
 	{
+		joint1 = j1;
+		joint2 = j2;
+		offset1 = new Vector2(x1, y1);
+		offset2 = new Vector2(x2, y2);
+		if(type == 0)
+		{
+			cf = new Color(0,0,255);
+			cb = Color.white;
+			height = 0.1;
+			filter = cf3;
+		}
+		else if(type == 1)
+		{
+			cf = new Color(200,160,120);
+			cb = cf.darker();
+			height = 0.2;
+		}
+		else if(type == 2)
+		{
+			cf = new Color(255,200,0);
+			cb = cf.brighter();
+			height = 0.2;
+			density = 20;
+		}
+		else
+		{
+			cf = new Color(200,255,200);
+			cb = cf.darker();
+			height = 0.1;
+			filter = cf4;
+		}
+		setMass(MassType.NORMAL);
+		String[] data = {"R",""+type,""+j1,""+x1,""+y1,""+j2,""+x2,""+y2};
+		setUserData(data);
+		
+	}
+	public Rod(int type, int j1, Vector2 os1, int j2, Vector2 os2)
+	{
+		joint1 = j1;
+		joint2 = j2;
+		offset1 = os1;
+		offset2 = os2;
+		if(type == 0)
+		{
+			cf = new Color(0,0,255);
+			cb = Color.white;
+			height = 0.1;
+			filter = cf3;
+		}
+		else if(type == 1)
+		{
+			cf = new Color(200,160,120);
+			cb = cf.darker();
+			height = 0.2;
+		}
+		else if(type == 2)
+		{
+			cf = new Color(255,200,0);
+			cb = cf.brighter();
+			height = 0.2;
+			density = 20;
+		}
+		else
+		{
+			cf = new Color(200,255,200);
+			cb = cf.darker();
+			height = 0.1;
+			filter = cf4;
+		}
+		setMass(MassType.NORMAL);
+		String[] data = {"R",""+type,""+j1,""+os1.x,""+os1.y,""+j2,""+os2.x,""+os2.y};
+		setUserData(data);
+		
+	}
+	public void adjustShape(Vector2 point1, Vector2 point2)
+	{
+		p1 = point1.copy();
+		p2 = point2.copy();
+		p1.add(offset1);
+		p2.add(offset2);
+		System.out.println(p1+", "+p2);
+		width = Math.abs(p1.distance(p2));
+		
+		Vector2 midpoint = p1.copy();
+		midpoint.add(p2);
+		midpoint.setMagnitude(midpoint.getMagnitude()/2);
+		a = (p2.copy().difference(p1)).getDirection();
+		
+		this.removeAllFixtures();
+		Rectangle floorRect = new Rectangle(width, height);
+		BodyFixture b = new BodyFixture(floorRect);
+		b.setFriction(0.7);
+		b.setRestitution(0.1);
+		b.setDensity(density);
+		b.setFilter(filter);
+		this.addFixture(b);
+		
+		this.setMass(MassType.NORMAL);
+		this.translate(midpoint);
+		this.rotateAboutCenter(a);
+	}
+	public Rod(int type, double x1, double y1, double x2, double y2, int j1, int j2)
+	{
+		joint1 = j1;
+		joint2 = j2;
 		p1 = new Vector2(x1,y1);
-		p2 = new Vector2(x1,y1);
-		double height = Math.abs(p1.distance(p2));
+		p2 = new Vector2(x2,y2);
+		width = Math.abs(p1.distance(p2));
 		Vector2 midpoint = p1.copy();
 		midpoint.add(p2);
 		midpoint.setMagnitude(midpoint.getMagnitude()/2);
@@ -66,7 +177,7 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(0,0,255);
 			cb = Color.white;
-			Rectangle floorRect = new Rectangle(height, 0.1);
+			Rectangle floorRect = new Rectangle(width, 0.1);
     		BodyFixture b = new BodyFixture(floorRect);
     		b.setFriction(0.7);
     		b.setRestitution(0.1);
@@ -77,7 +188,7 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(200,160,120);
 			cb = cf.darker();
-			Rectangle floorRect = new Rectangle(height, 0.2);
+			Rectangle floorRect = new Rectangle(width, 0.2);
     		BodyFixture b = new BodyFixture(floorRect);
     		b.setFriction(0.7);
     		b.setRestitution(0.1);
@@ -88,7 +199,7 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(255,200,0);
 			cb = cf.brighter();
-			Rectangle floorRect = new Rectangle(height, 0.2);
+			Rectangle floorRect = new Rectangle(width, 0.2);
     		BodyFixture b = new BodyFixture(floorRect);
     		b.setFriction(0.7);
     		b.setRestitution(0.1);
@@ -100,7 +211,7 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(200,255,200);
 			cb = cf.darker();
-			Rectangle floorRect = new Rectangle(height, 0.1);
+			Rectangle floorRect = new Rectangle(width, 0.1);
     		BodyFixture b = new BodyFixture(floorRect);
     		b.setFriction(0.7);
     		b.setRestitution(0.1);
@@ -113,11 +224,13 @@ public class Rod extends GamePiece{
 		this.rotateAboutCenter(a);
 		
 	}
-	public Rod(int type, Vector2 point1, Vector2 point2)
+	public Rod(int type, Vector2 point1, Vector2 point2, int j1, int j2)
 	{
+		joint1 = j1;
+		joint2 = j2;
 		p1 = point1;
 		p2 = point2;
-		double height = Math.abs(p1.distance(p2));
+		width = Math.abs(p1.distance(p2));
 		Vector2 midpoint = p1.copy();
 		midpoint.add(p2);
 		midpoint.setMagnitude(midpoint.getMagnitude()/2);
@@ -126,7 +239,7 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(0,0,255);
 			cb = Color.white;
-			Rectangle floorRect = new Rectangle(height, 0.1);
+			Rectangle floorRect = new Rectangle(width, 0.1);
     		BodyFixture b = new BodyFixture(floorRect);
     		b.setFriction(0.7);
     		b.setRestitution(0.1);
@@ -137,7 +250,7 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(200,160,120);
 			cb = cf.darker();
-			Rectangle floorRect = new Rectangle(height, 0.2);
+			Rectangle floorRect = new Rectangle(width, 0.2);
     		BodyFixture b = new BodyFixture(floorRect);
     		b.setFriction(0.7);
     		b.setRestitution(0.1);
@@ -148,7 +261,7 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(255,200,0);
 			cb = cf.brighter();
-			Rectangle floorRect = new Rectangle(height, 0.2);
+			Rectangle floorRect = new Rectangle(width, 0.2);
     		BodyFixture b = new BodyFixture(floorRect);
     		b.setFriction(0.7);
     		b.setRestitution(0.1);
@@ -160,7 +273,7 @@ public class Rod extends GamePiece{
 		{
 			cf = new Color(200,255,200);
 			cb = cf.darker();
-			Rectangle floorRect = new Rectangle(height, 0.1);
+			Rectangle floorRect = new Rectangle(width, 0.1);
     		BodyFixture b = new BodyFixture(floorRect);
     		b.setFriction(0.7);
     		b.setRestitution(0.1);
@@ -171,6 +284,11 @@ public class Rod extends GamePiece{
 		// move the floor down a bit
 		this.translate(midpoint);
 		this.rotateAboutCenter(a);
+	}
+	public void initializeJoints(int j1, int j2)
+	{
+		joint1 = j1;
+		joint2 = j2;
 	}
 	public void adjustShape(double x1, double y1, double x2, double y2)
 	{
@@ -179,14 +297,14 @@ public class Rod extends GamePiece{
 		double density = this.getFixture(0).getDensity();
 		Filter caFi = this.getFixture(0).getFilter();
 		
-		double height = Math.abs(p1.distance(p2));
+		width = Math.abs(p1.distance(p2));
 		Vector2 midpoint = p1.copy();
 		midpoint.add(p2);
 		midpoint.setMagnitude(midpoint.getMagnitude()/2);
 		a = (p2.copy().difference(p1)).getDirection();
 		
 		this.removeAllFixtures();
-		Rectangle floorRect = new Rectangle(height, 0.1);
+		Rectangle floorRect = new Rectangle(width, 0.1);
 		BodyFixture b = new BodyFixture(floorRect);
 		b.setFriction(0.7);
 		b.setRestitution(0.1);
@@ -197,31 +315,7 @@ public class Rod extends GamePiece{
 		this.translate(midpoint);
 		this.rotateAboutCenter(a);
 	}
-	public void adjustShape(Vector2 point1, Vector2 point2)
-	{
-		p1 = point1;
-		p2 = point2;
-		double density = this.getFixture(0).getDensity();
-		Filter caFi = this.getFixture(0).getFilter();
-		
-		double height = Math.abs(p1.distance(p2));
-		Vector2 midpoint = p1.copy();
-		midpoint.add(p2);
-		midpoint.setMagnitude(midpoint.getMagnitude()/2);
-		a = (p2.copy().difference(p1)).getDirection();
-		
-		this.removeAllFixtures();
-		Rectangle floorRect = new Rectangle(height, 0.1);
-		BodyFixture b = new BodyFixture(floorRect);
-		b.setFriction(0.7);
-		b.setRestitution(0.1);
-		b.setDensity(density);
-		b.setFilter(caFi);
-		this.addFixture(b);
-		
-		this.translate(midpoint);
-		this.rotateAboutCenter(a);
-	}
+	
 	public double getX()
 	{
 		return x;
@@ -258,8 +352,7 @@ public class Rod extends GamePiece{
 	}
 	public void render(Graphics2D g, double scale)
 	{
-		double ow = r.getWidth();
-		r = new Rectangle(sc(ow-0.2), 0.1);
+		r = new Rectangle(sc(width-0.2), 0.1);
 		Vector2[] vertices = r.getVertices();
 		int l = vertices.length;
 		
@@ -270,13 +363,13 @@ public class Rod extends GamePiece{
 			p.lineTo(vertices[i].x * scale, vertices[i].y * scale);
 		}
 		p.closePath();
-		r = new Rectangle(ow, 0.1);
+		r = new Rectangle(width, 0.1);
 		AffineTransform ot = g.getTransform();
 		
 		// transform the coordinate system from world coordinates to local coordinates
 		AffineTransform lt = new AffineTransform();
-		lt.translate(x * scale, y * scale);
-		lt.rotate(a);
+		lt.translate(getWorldCenter().x * scale, getWorldCenter().y * scale);
+		lt.rotate(getTransform().getRotation());
 		
 		// apply the transform
 		g.transform(lt);
@@ -286,8 +379,7 @@ public class Rod extends GamePiece{
 	}
 	public void render2(Graphics2D g, double scale)
 	{
-		double ow = r.getWidth();
-		r = new Rectangle(sc(ow-0.2), 0.1);
+		r = new Rectangle(sc(width-0.2), 0.1);
 		Vector2[] vertices = r.getVertices();
 		int l = vertices.length;
 		
@@ -298,13 +390,13 @@ public class Rod extends GamePiece{
 			p.lineTo(vertices[i].x * scale, vertices[i].y * scale);
 		}
 		p.closePath();
-		r = new Rectangle(ow, 0.1);
+		r = new Rectangle(width, 0.1);
 		Vector2 center = r.getCenter();
 		AffineTransform ot = g.getTransform();
 		// transform the coordinate system from world coordinates to local coordinates
 		AffineTransform lt = new AffineTransform();
-		lt.translate(x * scale, y * scale);
-		lt.rotate(a);
+		lt.translate(getWorldCenter().x * scale, getWorldCenter().y * scale);
+		lt.rotate(getTransform().getRotation());
 		
 		// apply the transform
 		g.transform(lt);
@@ -313,13 +405,13 @@ public class Rod extends GamePiece{
 		g.setStroke(new BasicStroke((int)(scale/20)));
 		g.setColor(new Color(150,150,150));
 		Ellipse2D.Double c = new Ellipse2D.Double(
-				(center.x+ow/2 - 0.075) * scale,
+				(center.x+width/2 - 0.075) * scale,
 				(center.y - 0.075) * scale,
 				0.15 * scale,
 				0.15 * scale);
 		g.draw(c);
 		c = new Ellipse2D.Double(
-				(center.x - 0.075-ow/2) * scale,
+				(center.x - 0.075-width/2) * scale,
 				(center.y - 0.075) * scale,
 				0.15 * scale,
 				0.15 * scale);
