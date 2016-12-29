@@ -39,7 +39,7 @@ public class GoalArea extends GamePiece{
 		this.setMass(MassType.NORMAL);
 		// move the floor down a bit
 		this.translate(x, y);
-		String[] s = {"GA",""+(x*40),""+(y*40)+","+(w*40),""+(h*40)};
+		String[] s = {"GA",""+(x*40),""+(y*40),""+(w*40),""+(h*40)};
 		this.setUserData(s);
 	}
 	public void render(Graphics2D g, double scale)
@@ -68,5 +68,14 @@ public class GoalArea extends GamePiece{
 		g.fill(fillPath);
 		g.setTransform(ot);
 		
+	}
+	public String[] returnUpdatedData() {
+		String[] s = (String[])getUserData();
+		s[1] = ""+40*this.getTransform().getTranslationX();
+		s[2] = ""+40*this.getTransform().getTranslationY();
+		s[3] = ""+40*((Rectangle)this.getFixture(0).getShape()).getWidth();
+		s[4] = ""+40*((Rectangle)this.getFixture(0).getShape()).getHeight();
+		setUserData(s);
+		return s;
 	}
 }

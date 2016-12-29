@@ -43,7 +43,7 @@ public class StaticRect extends GamePiece{
 		// move the floor down a bit
 		this.translate(x, y);
 		this.rotateAboutCenter(a);
-		String[] s = {"SR",""+(x*40),""+(y*40)+","+(w*40),""+(h*40),""+(a*180/Math.PI)};
+		String[] s = {"SR",""+(x*40),""+(y*40),""+(w*40),""+(h*40),""+(a*180/Math.PI)};
 		this.setUserData(s);
 	}
 	public void render(Graphics2D g, double scale)
@@ -76,5 +76,15 @@ public class StaticRect extends GamePiece{
 		g.fill(fillPath);
 		g.setTransform(ot);
 		
+	}
+	public String[] returnUpdatedData() {
+		String[] s = (String[])getUserData();
+		s[1] = ""+40*this.getTransform().getTranslationX();
+		s[2] = ""+40*this.getTransform().getTranslationY();
+		s[3] = ""+40*((Rectangle)this.getFixture(0).getShape()).getWidth();
+		s[4] = ""+40*((Rectangle)this.getFixture(0).getShape()).getHeight();
+		s[5] = ""+this.getTransform().getRotation();
+		setUserData(s);
+		return s;
 	}
 }

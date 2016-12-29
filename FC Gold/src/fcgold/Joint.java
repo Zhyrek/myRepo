@@ -57,4 +57,14 @@ public class Joint extends GamePiece{
 	public void render2(Graphics2D g, double scale) {
 		
 	}
+	public String[] returnData() {
+		return (String[])getUserData();
+	}
+	public String[] returnUpdatedData() {
+		String[] s = (String[])getUserData();
+		s[1] = ""+40*this.getTransform().getTranslationX();
+		s[2] = ""+40*this.getTransform().getTranslationY();
+		setUserData(s);
+		return s;
+	}
 }

@@ -36,4 +36,7 @@ public class GamePiece extends Body{
 	public void render2(Graphics2D g, double scale) {
 		
 	}
+	public String[] returnUpdatedData() {
+		return null;
+	}
 }

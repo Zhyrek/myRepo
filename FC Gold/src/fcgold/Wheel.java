@@ -207,4 +207,14 @@ public class Wheel extends GamePiece{
 		}
 		return v;
 	}
+	public String[] returnUpdatedData() {
+		String[] s = (String[])getUserData();
+		s[1] = ""+40*this.getTransform().getTranslationX();
+		s[2] = ""+40*this.getTransform().getTranslationY();
+		s[3] = ""+80*((Circle)this.getFixture(0).getShape()).getRadius();
+		s[4] = ""+this.getTransform().getRotation();
+		s[5] = ""+torque;
+		setUserData(s);
+		return s;
+	}
 }

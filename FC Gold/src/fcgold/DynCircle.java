@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector3;
 import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.BodyFixture;
@@ -137,5 +138,15 @@ public class DynCircle extends GamePiece{
 			return v;
 		}
 		return null;
+	}
+	public String[] returnUpdatedData() {
+		String[] s = (String[])getUserData();
+		s[1] = ""+40*this.getTransform().getTranslationX();
+		s[2] = ""+40*this.getTransform().getTranslationY();
+		s[3] = ""+80*((Circle)this.getFixture(0).getShape()).getRadius();
+		s[4] = ""+this.getTransform().getRotation();
+		s[5] = ""+toInt(joints);
+		setUserData(s);
+		return s;
 	}
 }

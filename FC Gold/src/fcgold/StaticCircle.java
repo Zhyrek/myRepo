@@ -70,4 +70,12 @@ public class StaticCircle extends GamePiece{
 		g.fill(fillPath);
 		g.setTransform(ot);
 	}
+	public String[] returnUpdatedData() {
+		String[] s = (String[])getUserData();
+		s[1] = ""+40*this.getTransform().getTranslationX();
+		s[2] = ""+40*this.getTransform().getTranslationY();
+		s[3] = ""+80*((Circle)this.getFixture(0).getShape()).getRadius();
+		setUserData(s);
+		return s;
+	}
 }
