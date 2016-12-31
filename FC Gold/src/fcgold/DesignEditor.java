@@ -258,6 +258,8 @@ public class DesignEditor extends World{
 			}
 		}
 		rodIndices.clear();
+		jointLocations.clear();
+		initializeJointLocations();
 	}
 	public void initializeBodyMovement(int index)
 	{
