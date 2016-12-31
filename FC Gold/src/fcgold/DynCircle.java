@@ -112,7 +112,6 @@ public class DynCircle extends GamePiece{
 		g.fill(fillPath);
 		if(joints)
 		{
-			radius += 0.1;
 			g.setStroke(new BasicStroke(2));
 			g.setColor(Color.white);
 			g.draw(jointLocations[0]);

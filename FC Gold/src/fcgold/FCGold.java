@@ -18,26 +18,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferStrategy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.Body;
-import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.dynamics.Settings;
-import org.dyn4j.dynamics.World;
-import org.dyn4j.dynamics.joint.RevoluteJoint;
-import org.dyn4j.geometry.Circle;
-import org.dyn4j.geometry.MassType;
-import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.geometry.Vector2;
-import org.dyn4j.geometry.Vector3;
 
 /**
  * Class used to show a simple example of using the dyn4j project using
@@ -246,7 +233,6 @@ public class FCGold extends JFrame {
 		    { 
 		    	curX = evt.getX(); //get current mouse location during drag
 		        curY = evt.getY(); //
-		        Vector3 v;
 		        if(!paused || (world.gameMode == -1 && world.rodAttach1 == -1)) // if dragging screen (effective result of logic)
 		        {
 		        	xPos += ((mouseStartX-curX)); //move screen the difference between last-frames position and this one
@@ -349,7 +335,6 @@ public class FCGold extends JFrame {
 			}
 			if(drag != null)
 			{
-				System.out.println(drag);
 				world.drag(drag);
 				drag = null;
 			}

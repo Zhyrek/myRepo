@@ -47,6 +47,7 @@ public class DesignEditor extends World{
 		this.removeAllBodiesAndJoints();
 		rods.clear();
 		nonRods.clear();
+		jointLocations.clear();
 		String[] str = levelData.split(";"); //split design string into string array, by the character ;
 		String[] temp;//dummy var, to store string fragments in
 		double d2r = Math.PI/180; //degrees to radians conversion
@@ -131,8 +132,11 @@ public class DesignEditor extends World{
 		{
 			int index = getBodies().indexOf(b);
 			Vector3[] v = ((GamePiece)b).getJointVectors();
+			
 			for(int i = 0; i < v.length; i++)
 			{
+				System.out.println(v[i].x+", "+v[i].y);
+				
 				v[i].z = index;
 				jointLocations.add(v[i]);
 			}
@@ -184,6 +188,51 @@ public class DesignEditor extends World{
 				}
 			}
 		}
+		else if(s.equals("W"))
+		{
+			for(Vector3 v:((GamePiece) b).getJointVectors())
+			{
+				int ji = getBodyCount();
+				System.out.println(v.x+", "+v.y);
+				Joint joint = new Joint(v.x, v.y);
+				addBody(joint);
+				for(Body j : b.getJoinedBodies())
+				{
+					if(((String[])j.getUserData())[0] == "R")
+					{
+						System.out.println(((Rod)j).joint1+", "+((Rod)j).joint1+", "+(int)v.z);
+						if(((Rod)j).joint1 == index(b))
+						{
+							System.out.println(((Rod)j).p1+", "+joint.getWorldCenter());
+							if(((Rod)j).p1.equals(joint.getWorldCenter()))
+							{
+								((Rod)j).joint1 = ji;
+								((Rod)j).offset1 = new Vector2(0, 0);
+								RevoluteJoint rj = new RevoluteJoint(joint, j, joint.getWorldCenter());
+								addJoint(rj);
+							}
+						}
+						else
+						{
+							System.out.println(((Rod)j).p2+", "+joint.getWorldCenter());
+							if(((Rod)j).p2.equals(joint.getWorldCenter()))
+							{
+								((Rod)j).joint2 = ji;
+								((Rod)j).offset2 = new Vector2(0, 0);
+								RevoluteJoint rj = new RevoluteJoint(joint, j, joint.getWorldCenter());
+								addJoint(rj);
+							}
+							
+						}
+					}
+				}
+				if(joint.getJoinedBodies().size() == 0)
+				{
+					removeBody(joint);
+				}
+			}
+			
+		}
 		removeBody(b);
 		for(Body b1: getBodies())
 		{
@@ -219,16 +268,20 @@ public class DesignEditor extends World{
 		Set<Integer> set2 = new HashSet<Integer>();
 		set2.add(index);
 		nonRods.add(index);
+		rodAttach1 = index;
 		while(set2.size() > 0)
 		{
-			set1 = set2;
+			System.out.println(set2);
+			set1.clear();
+			set1.addAll(set2);
 			set2.clear();
+			System.out.println(set1);
 			for(int i: set1)
 			{
-				List<Body> l = getBody(i).getJoinedBodies();
-				for(Body b: l)
+				for(Body b: getBody(i).getJoinedBodies())
 				{
 					int ib = index(b);
+					System.out.println(ib);
 					if(!nonRods.contains(ib))
 					{
 						nonRods.add(ib);

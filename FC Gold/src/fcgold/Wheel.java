@@ -185,7 +185,6 @@ public class Wheel extends GamePiece{
 		g.transform(lt);
 		g.setColor(cf);
 		g.fill(fillPath);
-		radius += 0.1;
 		g.setStroke(new BasicStroke(2));
 		g.setColor(Color.white);
 		g.draw(jointLocations[0]);
