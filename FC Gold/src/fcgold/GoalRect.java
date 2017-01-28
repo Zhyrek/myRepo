@@ -45,7 +45,7 @@ public class GoalRect extends GamePiece{
 		BodyFixture b1 = new BodyFixture(floorRect);
 		b1.setFriction(0.7);
 		b1.setRestitution(0.1);
-		b1.setFilter(new CategoryFilter(1,7));
+		b1.setFilter(new GameFilter(1,7));
 		this.addFixture(b1);
 		this.setMass(MassType.INFINITE);
 		// move the floor down a bit

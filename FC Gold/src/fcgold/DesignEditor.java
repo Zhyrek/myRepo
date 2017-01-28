@@ -21,7 +21,8 @@ public class DesignEditor extends World{
 	public ArrayList<Integer> rodIndices = new ArrayList<Integer>();
 	public ArrayList<Integer> nonRods = new ArrayList<Integer>();
 	public ArrayList<Integer> rods = new ArrayList<Integer>();
-	
+	public ArrayList<Body> buildSegments = new ArrayList<Body>();
+	public ArrayList<Body> goalSegments = new ArrayList<Body>();
 	
 	//gameMode: -2 = delete, -1 = move, 0 = CW, 1 = UW, 2 = CCW, 3 = water, 4 = wood, 5 = gold, 6 = ghost
 	public int gameMode = -1;
@@ -40,7 +41,22 @@ public class DesignEditor extends World{
 		settings.setPositionConstraintSolverIterations(100);
 		settings.setVelocityConstraintSolverIterations(100); //ehhhhh
 		setSettings(settings); //its kinda like fc
+		preinitialize();
 		initializeWorld();
+	}
+	public void preinitialize()
+	{
+		String[] str = levelData.split(";"); //split design string into string array, by the character ;
+		String[] temp;//dummy var, to store string fragments in
+		double d2r = Math.PI/180; //degrees to radians conversion
+		ArrayList<BuildArea> buildAreas = new ArrayList<BuildArea>();
+		ArrayList<BuildArea> goalAreas = new ArrayList<BuildArea>();
+	    for(int i = 0; i < str.length; i++) //add objects for each string fragment
+	    {
+	    	temp = str[i].split(",");
+	    	if(temp[0].equals("BA")){addBody(new BuildArea(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40));}
+	    	else if(temp[0].equals("GA")){addBody(new GoalArea(Double.valueOf(temp[1])/40,Double.valueOf(temp[2])/40,Double.valueOf(temp[3])/40,Double.valueOf(temp[4])/40));}
+	    }
 	}
 	public void initializeWorld()
 	{
@@ -473,6 +489,10 @@ public class DesignEditor extends World{
 							deleteObject(j);
 						}
 					}
+				}
+				if(getBody(moveBody) instanceof Wheel)
+				{
+					getBody(moveBody).getFixture(0).setFilter(new GameFilter(2,3,getBody(moveBody).getWorldCenter()));
 				}
 			}
 			for(int i: rods)

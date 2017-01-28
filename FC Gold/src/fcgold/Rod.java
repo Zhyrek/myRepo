@@ -28,6 +28,8 @@ public class Rod extends GamePiece{
 	public CategoryFilter filter = cf2;
 	public Vector2 p1, p2, offset1, offset2;
 	public int joint1, joint2;
+	public int f1 = 2;
+	public int f2 = 3;
 	public Rod(int type, int j1, double x1, double y1, int j2, double x2, double y2)
 	{
 		joint1 = j1;
@@ -39,7 +41,8 @@ public class Rod extends GamePiece{
 			cf = new Color(0,0,255);
 			cb = Color.white;
 			height = 0.1;
-			filter = cf3;
+			f1 = 4;
+			f2 = 1;
 		}
 		else if(type == 1)
 		{
@@ -59,7 +62,8 @@ public class Rod extends GamePiece{
 			cf = new Color(200,255,200);
 			cb = cf.darker();
 			height = 0.1;
-			filter = cf4;
+			f1 = 8;
+			f2 = 0;
 		}
 		setMass(MassType.NORMAL);
 		String[] data = {"R",""+type,""+j1,""+x1,""+y1,""+j2,""+x2,""+y2};
@@ -77,7 +81,8 @@ public class Rod extends GamePiece{
 			cf = new Color(0,0,255);
 			cb = Color.white;
 			height = 0.1;
-			filter = cf3;
+			f1 = 4;
+			f2 = 1;
 		}
 		else if(type == 1)
 		{
@@ -97,7 +102,8 @@ public class Rod extends GamePiece{
 			cf = new Color(200,255,200);
 			cb = cf.darker();
 			height = 0.1;
-			filter = cf4;
+			f1 = 8;
+			f2 = 0;
 		}
 		setMass(MassType.NORMAL);
 		String[] data = {"R",""+type,""+j1,""+os1.x,""+os1.y,""+j2,""+os2.x,""+os2.y};
@@ -125,7 +131,7 @@ public class Rod extends GamePiece{
 		b.setFriction(0.7);
 		b.setRestitution(0.1);
 		b.setDensity(density);
-		b.setFilter(filter);
+		b.setFilter(new GameFilter(f1, f2, p1, p2));
 		this.addFixture(b);
 		
 		this.setMass(MassType.NORMAL);

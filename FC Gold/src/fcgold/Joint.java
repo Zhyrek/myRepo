@@ -16,7 +16,7 @@ public class Joint extends GamePiece{
 	{
 		Circle cirShape = new Circle(0.1);
 		BodyFixture b = new BodyFixture(cirShape);
-		b.setFilter(new CategoryFilter(8,0));
+		b.setFilter(new GameFilter(8,0));
 		addFixture(b);
 		setMass(MassType.NORMAL);
 		this.translate(x, y);
@@ -27,7 +27,7 @@ public class Joint extends GamePiece{
 	public Joint(Vector2 p2) {
 		Circle cirShape = new Circle(0.1);
 		BodyFixture b = new BodyFixture(cirShape);
-		b.setFilter(new CategoryFilter(8,0));
+		b.setFilter(new GameFilter(8,0));
 		addFixture(b);
 		setMass(MassType.NORMAL);
 		this.translate(p2);

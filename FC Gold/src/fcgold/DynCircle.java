@@ -65,7 +65,7 @@ public class DynCircle extends GamePiece{
 		BodyFixture b1 = new BodyFixture(cirShape);
 		b1.setFriction(0.7);
 		b1.setRestitution(0.1);
-		b1.setFilter(new CategoryFilter(2,3));
+		b1.setFilter(new GameFilter(1,7));
 		this.addFixture(b1);
 		this.setMass(MassType.NORMAL);
 		this.translate(x, y);

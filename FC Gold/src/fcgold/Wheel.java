@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Vector2;
 import org.dyn4j.geometry.Vector3;
 import org.dyn4j.collision.CategoryFilter;
 import org.dyn4j.dynamics.Body;
@@ -79,7 +80,7 @@ public class Wheel extends GamePiece{
 		BodyFixture b1 = new BodyFixture(cirShape);
 		b1.setFriction(0.7);
 		b1.setRestitution(0.1);
-		b1.setFilter(new CategoryFilter(2,3));
+		b1.setFilter(new GameFilter(2,3, new Vector2(x,y)));
 		this.addFixture(b1);
 		this.setMass(MassType.NORMAL);
 		this.translate(x, y);
@@ -143,7 +144,7 @@ public class Wheel extends GamePiece{
 		BodyFixture b1 = new BodyFixture(cirShape);
 		b1.setFriction(0.7);
 		b1.setRestitution(0.1);
-		b1.setFilter(new CategoryFilter(2,3));
+		b1.setFilter(new GameFilter(2,3, new Vector2(x,y)));
 		this.addFixture(b1);
 		this.setMass(MassType.NORMAL);
 		this.translate(x, y);

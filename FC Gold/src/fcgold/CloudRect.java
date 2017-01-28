@@ -46,7 +46,7 @@ public class CloudRect extends GamePiece{
 		b1.setDensity(0.5); //1
 		b1.setFriction(0.7);
 		b1.setRestitution(0.1);
-		b1.setFilter(new CategoryFilter(1,7));
+		b1.setFilter(new GameFilter(1,7));
 		this.addFixture(b1);
 		this.setMass(MassType.NORMAL);
 		this.setLinearDamping(1);
